@@ -1,0 +1,6 @@
+# Ignore IAR debug folder
+debug/
+
+#file=====================================
+IMXRT105.dbgdt
+AP_DAQV3_IAR9.20.4.wsdt

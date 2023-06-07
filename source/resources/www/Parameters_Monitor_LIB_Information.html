@@ -1,0 +1,200 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta http-equiv="Pragma" content="no-cache">
+		<link rel="stylesheet" href="./css/style.css" type="text/css">
+		<link rel="stylesheet" href="./css/status.css" type="text/css"> 
+		<script type="text/javascript" src="./js/util.js"></script>
+		<script type="text/javascript" src="./js/constant.js"></script>
+		<script type="text/javascript" src="./js/tabdes.js"></script>
+		<script type="text/javascript" src="./js/jsdiff.js"></script>
+		<script type="text/javascript" src="./js/param_lib_info.js"></script>
+		<script type="text/javascript">
+			document.write("<title>"+LanguageUI["V_STAT_dhcpWebtitle"]+"</title>") ;
+			// Session Key			
+				
+		</script>
+	</head>
+	<body onload="LoadFrame()" class="mainbody">
+		<div style="overflow-x:hidden; overflow-y:auto; WIDTH: 100%; HEIGHT: 460px">
+			<form id="ConfigForm">
+				<!-- INTRODUCTION TEXT -->
+				<table class="width_100p" id="tabTest" border="0" cellpadding="0" cellspacing="0">
+					<tbody>
+						<tr>
+							<td class="prompt">
+							<table class="width_100p" border="0" cellpadding="0" cellspacing="0">
+								<tbody>
+									<tr>
+										<td class="title_common" BindText="V_STAT_libInfoTitleIntro"></td>
+									</tr>
+								</tbody>
+							</table></td>
+						</tr>
+						<tr>
+							<td class="height5p"></td>
+						</tr>
+					</tbody>
+				</table>
+
+				<table>
+					<tr>
+						<td height="5px"></td>
+					</tr>
+				</table>
+
+				<!-- CLIENT INFO -->
+				<table class="tabal_bg width_100p" id="libTable" align="center" border="0" cellpadding="0" cellspacing="1">				
+					<tbody>
+						<tr class="tabal_title">
+							<td BindText="V_STAT_libID"></td>							
+							<td BindText="V_STAT_libVolt"></td>
+							<td BindText="V_STAT_libCurr"></td>
+							<td BindText="V_STAT_libTemp"></td>		
+							<td BindText="V_STAT_libSOC"></td>							
+						</tr>	
+						
+						<tr class="tabal_center01 trTabContent">		
+						<td class="tabal_center01 width_20p" id="idlib_id1"></td>							
+						<td class="tabal_center01 width_20p" id="idlib_voltage1"></td>	
+						<td class="tabal_center01 width_20p" id="idlib_current1"></td>	
+						<td class="tabal_center01 width_20p" id="idlib_temp1"></td>
+						<td class="tabal_center01 width_20p" id="idlib_soc1"></td>		
+						</tr>	
+						
+						<tr class="tabal_center01 trTabContent">		
+						<td class="tabal_center01 width_20p" id="idlib_id2"></td>							
+						<td class="tabal_center01 width_20p" id="idlib_voltage2"></td>	
+						<td class="tabal_center01 width_20p" id="idlib_current2"></td>	
+						<td class="tabal_center01 width_20p" id="idlib_temp2"></td>
+						<td class="tabal_center01 width_20p" id="idlib_soc2"></td>		
+						</tr>		
+						
+						<tr class="tabal_center01 trTabContent">		
+						<td class="tabal_center01 width_20p" id="idlib_id3"></td>							
+						<td class="tabal_center01 width_20p" id="idlib_voltage3"></td>	
+						<td class="tabal_center01 width_20p" id="idlib_current3"></td>	
+						<td class="tabal_center01 width_20p" id="idlib_temp3"></td>
+						<td class="tabal_center01 width_20p" id="idlib_soc3"></td>		
+						</tr>		
+						
+						<tr class="tabal_center01 trTabContent">		
+						<td class="tabal_center01 width_20p" id="idlib_id4"></td>							
+						<td class="tabal_center01 width_20p" id="idlib_voltage4"></td>	
+						<td class="tabal_center01 width_20p" id="idlib_current4"></td>	
+						<td class="tabal_center01 width_20p" id="idlib_temp4"></td>
+						<td class="tabal_center01 width_20p" id="idlib_soc4"></td>		
+						</tr>		
+						
+						<tr class="tabal_center01 trTabContent">		
+						<td class="tabal_center01 width_20p" id="idlib_id5"></td>							
+						<td class="tabal_center01 width_20p" id="idlib_voltage5"></td>	
+						<td class="tabal_center01 width_20p" id="idlib_current5"></td>	
+						<td class="tabal_center01 width_20p" id="idlib_temp5"></td>
+						<td class="tabal_center01 width_20p" id="idlib_soc5"></td>		
+						</tr>		
+						
+						<tr class="tabal_center01 trTabContent">		
+						<td class="tabal_center01 width_20p" id="idlib_id6"></td>							
+						<td class="tabal_center01 width_20p" id="idlib_voltage6"></td>	
+						<td class="tabal_center01 width_20p" id="idlib_current6"></td>	
+						<td class="tabal_center01 width_20p" id="idlib_temp6"></td>
+						<td class="tabal_center01 width_20p" id="idlib_soc6"></td>		
+						</tr>		
+						
+						<tr class="tabal_center01 trTabContent">		
+						<td class="tabal_center01 width_20p" id="idlib_id7"></td>							
+						<td class="tabal_center01 width_20p" id="idlib_voltage7"></td>	
+						<td class="tabal_center01 width_20p" id="idlib_current7"></td>	
+						<td class="tabal_center01 width_20p" id="idlib_temp7"></td>
+						<td class="tabal_center01 width_20p" id="idlib_soc7"></td>		
+						</tr>		
+						
+						<tr class="tabal_center01 trTabContent">		
+						<td class="tabal_center01 width_20p" id="idlib_id8"></td>							
+						<td class="tabal_center01 width_20p" id="idlib_voltage8"></td>	
+						<td class="tabal_center01 width_20p" id="idlib_current8"></td>	
+						<td class="tabal_center01 width_20p" id="idlib_temp8"></td>
+						<td class="tabal_center01 width_20p" id="idlib_soc8"></td>		
+						</tr>		
+						
+						<tr class="tabal_center01 trTabContent">		
+						<td class="tabal_center01 width_20p" id="idlib_id9"></td>							
+						<td class="tabal_center01 width_20p" id="idlib_voltage9"></td>	
+						<td class="tabal_center01 width_20p" id="idlib_current9"></td>	
+						<td class="tabal_center01 width_20p" id="idlib_temp9"></td>
+						<td class="tabal_center01 width_20p" id="idlib_soc9"></td>		
+						</tr>		
+						
+						<tr class="tabal_center01 trTabContent">		
+						<td class="tabal_center01 width_20p" id="idlib_id10"></td>							
+						<td class="tabal_center01 width_20p" id="idlib_voltage10"></td>	
+						<td class="tabal_center01 width_20p" id="idlib_current10"></td>	
+						<td class="tabal_center01 width_20p" id="idlib_temp10"></td>
+						<td class="tabal_center01 width_20p" id="idlib_soc10"></td>		
+						</tr>		
+						
+						<tr class="tabal_center01 trTabContent">		
+						<td class="tabal_center01 width_20p" id="idlib_id11"></td>							
+						<td class="tabal_center01 width_20p" id="idlib_voltage11"></td>	
+						<td class="tabal_center01 width_20p" id="idlib_current11"></td>	
+						<td class="tabal_center01 width_20p" id="idlib_temp11"></td>
+						<td class="tabal_center01 width_20p" id="idlib_soc11"></td>		
+						</tr>	
+						
+						<tr class="tabal_center01 trTabContent">		
+						<td class="tabal_center01 width_20p" id="idlib_id12"></td>							
+						<td class="tabal_center01 width_20p" id="idlib_voltage12"></td>	
+						<td class="tabal_center01 width_20p" id="idlib_current12"></td>	
+						<td class="tabal_center01 width_20p" id="idlib_temp12"></td>
+						<td class="tabal_center01 width_20p" id="idlib_soc12"></td>		
+						</tr>	
+						
+						<tr class="tabal_center01 trTabContent">		
+						<td class="tabal_center01 width_20p" id="idlib_id13"></td>							
+						<td class="tabal_center01 width_20p" id="idlib_voltage13"></td>	
+						<td class="tabal_center01 width_20p" id="idlib_current13"></td>	
+						<td class="tabal_center01 width_20p" id="idlib_temp13"></td>
+						<td class="tabal_center01 width_20p" id="idlib_soc13"></td>		
+						</tr>	
+						
+						<tr class="tabal_center01 trTabContent">		
+						<td class="tabal_center01 width_20p" id="idlib_id14"></td>							
+						<td class="tabal_center01 width_20p" id="idlib_voltage14"></td>	
+						<td class="tabal_center01 width_20p" id="idlib_current14"></td>	
+						<td class="tabal_center01 width_20p" id="idlib_temp14"></td>
+						<td class="tabal_center01 width_20p" id="idlib_soc14"></td>		
+						</tr>	
+						
+						<tr class="tabal_center01 trTabContent">		
+						<td class="tabal_center01 width_20p" id="idlib_id15"></td>							
+						<td class="tabal_center01 width_20p" id="idlib_voltage15"></td>	
+						<td class="tabal_center01 width_20p" id="idlib_current15"></td>	
+						<td class="tabal_center01 width_20p" id="idlib_temp15"></td>
+						<td class="tabal_center01 width_20p" id="idlib_soc15"></td>		
+						</tr>	
+						
+						<tr class="tabal_center01 trTabContent">		
+						<td class="tabal_center01 width_20p" id="idlib_id16"></td>							
+						<td class="tabal_center01 width_20p" id="idlib_voltage16"></td>	
+						<td class="tabal_center01 width_20p" id="idlib_current16"></td>	
+						<td class="tabal_center01 width_20p" id="idlib_temp16"></td>
+						<td class="tabal_center01 width_20p" id="idlib_soc16"></td>		
+						</tr>					
+
+						<tr class="tabal_center01 trTabContent">
+							<td style="width:20%">--</td>						
+							<td style="width:20%">--</td>
+							<td style="width:20%">--</td>
+							<td style="width:20%">--</td>
+							<td style="width:20%">--</td>
+						</tr>
+					</tbody>
+				</table>				
+				
+			</form>
+
+		</div>
+
+	</body>
+</html>

@@ -1,0 +1,90 @@
+//--thanhcm3--07--04--22--
+
+//include-----------------------------------------------------------------------
+#include "header_files.h"
+//funciton----------------------------------------------------------------------
+uint8_t flash_test;
+
+//control task -------------------------------------------
+void control_task(void* pv_parameters){
+  cnt_task.control = 0;
+  system_flag_struct.cnt_reboot =0;
+  while(true){
+    cnt_task.control++;
+    
+    //blink led user-----------------
+    blink_led_user();
+    // user config save -------------
+    user_config_save();
+    //user reboot--------------------
+    user_reboot();
+    //user write crc32--------------
+    user_write_crc32();
+    
+    
+//    if(flash_test==1){
+//      sFLASH_EraseChip();
+//      flash_test =0;
+//    }
+    
+   
+    
+    
+    vTaskDelay(50);
+  }
+}
+
+//blink led user ---------------------------------------------------------------
+void blink_led_user(){
+  if(system_flag_struct.led_user_blink == true){
+    GPIO_PinWrite(GPIO3, 11U,1);
+    GPIO_PinWrite(GPIO2, 5U,1);
+    system_flag_struct.led_user_blink = false;
+  }
+  else
+  {
+    GPIO_PinWrite(GPIO3, 11U,0);
+    GPIO_PinWrite(GPIO2, 5U,0);
+    system_flag_struct.led_user_blink = true;
+  }
+}
+
+//user config save-------------------------------------------------------------
+void user_config_save(){
+  if ((flag_struct.save_config_flag & 0x01) == 0x01)
+  {
+    config_save();  
+    flag_struct.save_config_flag &= ~(0x01);   
+  }
+}
+// user_write_crc32-------------------------------------------------------------
+void user_write_crc32(){
+  if (system_flag_struct.u8IsRewriteSN == 1)
+  {
+    sFLASH_EraseSector(FLASH_CFG_START_SN);
+    sFLASH_WritePage((uint8_t *)&working_default_parameter_2, FLASH_CFG_START_SN, sizeof(SYSTEM_CONFIG_STRUCT_2));
+    system_flag_struct.u8IsRewriteSN = 0;
+  }
+  
+}
+// user_reboot------------------------------------------------------------------
+void user_reboot(){
+  if (system_flag_struct.u8IsRebootFlag == 1)
+  {
+    if(system_flag_struct.cnt_reboot++>=3){
+      private_mib_base_struct.siteGroup.siteSystemReset = 0x53;
+      system_flag_struct.u8IsRebootFlag = 0;
+      system_flag_struct.cnt_reboot =0;
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
