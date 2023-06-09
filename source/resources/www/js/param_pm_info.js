@@ -117,6 +117,13 @@ function PMStatus_get()
 				// }
 				else if (vPMModel == 15) {	
 					setRowText('idpm_Model', "SPM93");	
+				}
+				else if (vPMModel == 16) {	
+					setRowText('idpm_Model', "PM2230");	
+				}else if (vPMModel == 17) {	
+					setRowText('idpm_Model', "SPM93");	
+				}else if (vPMModel == 18) {	
+					setRowText('idpm_Model', "SDM72D");	
 				} 
 				
 				setRowText('idpm_InstalledPM', vPMInstalledPM);

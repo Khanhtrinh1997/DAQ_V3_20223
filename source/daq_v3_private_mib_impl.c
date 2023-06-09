@@ -194,6 +194,7 @@ error_t privateMibInit(void) {
       modbus_manager_struct.lib_manager_struct[i].lib_abs_slave_id = parameter.modbus_parameter[i].slave_id;
       switch(modbus_manager_struct.lib_manager_struct[i].lib_type)
       {
+      case 13:// COSLIGHT_CF4850T
       case 1:// COSLIGHT
         {
           modbus_manager_struct.lib_manager_struct[i].lib_slave_offset = 0;
@@ -216,6 +217,7 @@ error_t privateMibInit(void) {
           modbus_manager_struct.lib_manager_struct[i].lib_num_of_reg[2] = 2;
         }	
         break;
+      case 12:// SHOTO_SDA10_48100 
       case 3:// SHOTO_2019
         {
           modbus_manager_struct.lib_manager_struct[i].lib_slave_offset = 0;
@@ -281,6 +283,7 @@ error_t privateMibInit(void) {
         //              modbus_manager_struct.lib_manager_struct[i].lib_num_of_reg[0] = 54;
         //          }
         //          break;
+        case 14:// HUAFU_HF48100C
       case 6:// ZTT_2020   
         {
           modbus_manager_struct.lib_manager_struct[i].lib_slave_offset = 0;
@@ -588,6 +591,63 @@ error_t privateMibInit(void) {
           modbus_manager_struct.pm_manager_struct[i].pm_running_step   = PM_YADA_3PHASE_DPC_INFO_1;
         }
         break;
+      case 17: //Schneider 2022
+        {
+          modbus_manager_struct.pm_manager_struct[i].pm_slave_offset  = 16;
+          
+          modbus_manager_struct.pm_manager_struct[i].pm_base_addr[0]  = 29;  
+          modbus_manager_struct.pm_manager_struct[i].pm_num_of_reg[0]   = 20;
+          
+          modbus_manager_struct.pm_manager_struct[i].pm_base_addr[1]  = 128;      
+          modbus_manager_struct.pm_manager_struct[i].pm_num_of_reg[1]   = 3;
+          
+          modbus_manager_struct.pm_manager_struct[i].pm_base_addr[2]  = 2699;
+          modbus_manager_struct.pm_manager_struct[i].pm_num_of_reg[2]   = 24;
+          
+          modbus_manager_struct.pm_manager_struct[i].pm_base_addr[3]  = 2999;
+          modbus_manager_struct.pm_manager_struct[i].pm_num_of_reg[3]   = 6;
+          
+          modbus_manager_struct.pm_manager_struct[i].pm_base_addr[4]  = 3027; 
+          modbus_manager_struct.pm_manager_struct[i].pm_num_of_reg[4]   = 6;
+          
+          modbus_manager_struct.pm_manager_struct[i].pm_base_addr[5]  = 3053;
+          modbus_manager_struct.pm_manager_struct[i].pm_num_of_reg[5]   = 24;
+          
+          modbus_manager_struct.pm_manager_struct[i].pm_base_addr[6]  = 3077;         
+          modbus_manager_struct.pm_manager_struct[i].pm_num_of_reg[6]   = 8;
+          
+          modbus_manager_struct.pm_manager_struct[i].pm_base_addr[7]  = 3109;
+          modbus_manager_struct.pm_manager_struct[i].pm_num_of_reg[7]   = 2;
+          
+          modbus_manager_struct.pm_manager_struct[i].pm_running_step   = PM_SCHNEDER_3PHASE_INFO_1;
+        }
+        break;
+      case 18:  //EASTRON SMD72D 2022
+        {
+          modbus_manager_struct.pm_manager_struct[i].pm_slave_offset    = 16;
+          
+          modbus_manager_struct.pm_manager_struct[i].pm_base_addr[0]    = 0;  
+          modbus_manager_struct.pm_manager_struct[i].pm_num_of_reg[0]   = 30;
+          
+          modbus_manager_struct.pm_manager_struct[i].pm_base_addr[1]    = 30;      
+          modbus_manager_struct.pm_manager_struct[i].pm_num_of_reg[1]   = 30;
+          
+          modbus_manager_struct.pm_manager_struct[i].pm_base_addr[2]    = 60;
+          modbus_manager_struct.pm_manager_struct[i].pm_num_of_reg[2]   = 30;
+          
+          modbus_manager_struct.pm_manager_struct[i].pm_base_addr[3]    = 342;
+          modbus_manager_struct.pm_manager_struct[i].pm_num_of_reg[3]   = 30;
+          
+          modbus_manager_struct.pm_manager_struct[i].pm_base_addr[4]    = 11; 
+          modbus_manager_struct.pm_manager_struct[i].pm_num_of_reg[4]   = 30;
+          
+          modbus_manager_struct.pm_manager_struct[i].pm_base_addr[5]    = 64512;
+          modbus_manager_struct.pm_manager_struct[i].pm_num_of_reg[5]   = 4;
+          
+          modbus_manager_struct.pm_manager_struct[i].pm_running_step   = PM_EASTRON_INFO_1;
+          
+        }
+        break;
       };
     }
   }
@@ -673,7 +733,16 @@ error_t privateMibInit(void) {
           
           modbus_manager_struct.smcb_manager_struct[i].smcb_running_step = SMCB_MATIS_INFO_1;
         }
-        break;    
+        break; 
+        case 3:// GOL
+        {
+         modbus_manager_struct.smcb_manager_struct[i].smcb_slave_offset = 18;
+         modbus_manager_struct.smcb_manager_struct[i].smcb_base_addr[0] = 32768;
+         modbus_manager_struct.smcb_manager_struct[i].smcb_num_of_reg[0] = 1;
+          
+         modbus_manager_struct.smcb_manager_struct[i].smcb_running_step = SMCB_GOL_INFO_1;
+        }
+        break;
       };
     } 
   }    
@@ -5422,6 +5491,7 @@ error_t privateMibSetLIBattInfoEntry(const MibObject *object, const uint8_t *oid
       
       switch(modbus_manager_struct.lib_manager_struct[j-1].lib_type)
       {
+      case 13:// COSLIGHT_CF4850T  
       case 1:// COSLIGHT
         {
           modbus_manager_struct.lib_manager_struct[j-1].lib_slave_offset = 0;
@@ -5446,6 +5516,7 @@ error_t privateMibSetLIBattInfoEntry(const MibObject *object, const uint8_t *oid
           modbus_manager_struct.lib_manager_struct[j-1].lib_num_of_reg[2] = 2;
         }
         break;
+      case 12:// SHOTO_SDA10_48100
       case 3:// SHOTO_2019
         {
           modbus_manager_struct.lib_manager_struct[j-1].lib_slave_offset = 0;
@@ -5515,6 +5586,7 @@ error_t privateMibSetLIBattInfoEntry(const MibObject *object, const uint8_t *oid
         //            modbus_manager_struct.lib_manager_struct[j-1].lib_num_of_reg[0] = 54;                  
         //        }
         //        break;
+      case 14:// HUAFU_HF48100C
       case 6:// ZTT_2020
         {
           modbus_manager_struct.lib_manager_struct[j-1].lib_slave_offset = 0;
@@ -7783,6 +7855,59 @@ error_t privateMibSetPMInfoEntry(const MibObject *object, const uint8_t *oid,siz
           modbus_manager_struct.pm_manager_struct[j-1].pm_num_of_reg[0]   = 8;
         }
         break;
+      case 17://Schneider 2022
+        {
+          modbus_manager_struct.pm_manager_struct[j-1].pm_slave_offset  = 16;
+          modbus_manager_struct.pm_manager_struct[j-1].pm_abs_slave_id  = 16+j;
+          
+          modbus_manager_struct.pm_manager_struct[j-1].pm_base_addr[0]  = 29;  
+          modbus_manager_struct.pm_manager_struct[j-1].pm_num_of_reg[0] = 20;
+          
+          modbus_manager_struct.pm_manager_struct[j-1].pm_base_addr[1]  = 128;      
+          modbus_manager_struct.pm_manager_struct[j-1].pm_num_of_reg[1] = 3;
+          
+          modbus_manager_struct.pm_manager_struct[j-1].pm_base_addr[2]  = 2699;
+          modbus_manager_struct.pm_manager_struct[j-1].pm_num_of_reg[2] = 24;
+          
+          modbus_manager_struct.pm_manager_struct[j-1].pm_base_addr[3]  = 2999;
+          modbus_manager_struct.pm_manager_struct[j-1].pm_num_of_reg[3] = 6;
+          
+          modbus_manager_struct.pm_manager_struct[j-1].pm_base_addr[4]  = 3027; 
+          modbus_manager_struct.pm_manager_struct[j-1].pm_num_of_reg[4] = 6;
+          
+          modbus_manager_struct.pm_manager_struct[j-1].pm_base_addr[5]  = 3053;
+          modbus_manager_struct.pm_manager_struct[j-1].pm_num_of_reg[5] = 24;
+          
+          modbus_manager_struct.pm_manager_struct[j-1].pm_base_addr[6]  = 3077;         
+          modbus_manager_struct.pm_manager_struct[j-1].pm_num_of_reg[6] = 8;
+          
+          modbus_manager_struct.pm_manager_struct[j-1].pm_base_addr[7]  = 3109;
+          modbus_manager_struct.pm_manager_struct[j-1].pm_num_of_reg[7] = 2;
+        }
+        break;
+      case 18://EASTRON SMD72D 2022
+        {
+          modbus_manager_struct.pm_manager_struct[j-1].pm_slave_offset    = 16;
+          modbus_manager_struct.pm_manager_struct[j-1].pm_abs_slave_id    = 16+j;     
+          modbus_manager_struct.pm_manager_struct[j-1].pm_base_addr[0]    = 0;  
+          modbus_manager_struct.pm_manager_struct[j-1].pm_num_of_reg[0]   = 30;
+          
+          modbus_manager_struct.pm_manager_struct[j-1].pm_base_addr[1]    = 30;      
+          modbus_manager_struct.pm_manager_struct[j-1].pm_num_of_reg[1]   = 30;
+          
+          modbus_manager_struct.pm_manager_struct[j-1].pm_base_addr[2]    = 60;
+          modbus_manager_struct.pm_manager_struct[j-1].pm_num_of_reg[2]   = 30;
+          
+          modbus_manager_struct.pm_manager_struct[j-1].pm_base_addr[3]    = 342;
+          modbus_manager_struct.pm_manager_struct[j-1].pm_num_of_reg[3]   = 30;
+          
+          modbus_manager_struct.pm_manager_struct[j-1].pm_base_addr[4]    = 11; 
+          modbus_manager_struct.pm_manager_struct[j-1].pm_num_of_reg[4]   = 30;
+          
+          modbus_manager_struct.pm_manager_struct[j-1].pm_base_addr[5]    = 64512;
+          modbus_manager_struct.pm_manager_struct[j-1].pm_num_of_reg[5]   = 4;
+        }
+        break;
       };
       sModbusDev[j-1].device_vendor = modbus_manager_struct.pm_manager_struct[j-1].pm_type;
       sModbusDev[j-1].slave_id = modbus_manager_struct.pm_manager_struct[j-1].pm_abs_slave_id;  
@@ -8302,6 +8427,15 @@ error_t privateMibSetSmcbInfoEntry(const MibObject *object, const uint8_t *oid,s
         modbus_manager_struct.smcb_manager_struct[j-1].smcb_slave_offset = 18;
         modbus_manager_struct.smcb_manager_struct[j-1].smcb_abs_slave_id = 18+j;
         modbus_manager_struct.smcb_manager_struct[j-1].smcb_base_addr[0] = 16;
+        modbus_manager_struct.smcb_manager_struct[j-1].smcb_base_addr[0] = 1;                                       
+      }
+      break;
+      
+    case 3:// GOL
+      { 
+        modbus_manager_struct.smcb_manager_struct[j-1].smcb_slave_offset = 18;
+        modbus_manager_struct.smcb_manager_struct[j-1].smcb_abs_slave_id = 18+j;
+        modbus_manager_struct.smcb_manager_struct[j-1].smcb_base_addr[0] = 32768;
         modbus_manager_struct.smcb_manager_struct[j-1].smcb_base_addr[0] = 1;                                       
       }
       break;

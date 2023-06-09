@@ -82,7 +82,12 @@ function PMStatusGet()
 						}
 						else if(PMListInfo[i].vendor == 16){
 							setRowText(PMSetParam[1][i], 'YADA_3PHASE_DPC');
-
+						}
+						else if(PMListInfo[i].vendor == 17){
+							setRowText(PMSetParam[1][i], 'Schneider 2022');
+						}
+						else if(PMListInfo[i].vendor == 18){
+							setRowText(PMSetParam[1][i], 'EASTRON SMD72D 2022');
 						}
 						/*setRowText(PMSetParam[2][i], PMListInfo[i].serialNo);*/						
 					}	

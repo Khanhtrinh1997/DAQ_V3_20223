@@ -46,6 +46,9 @@ static const unsigned char CRCLowTable[] =
 MODBUS_RTU_STRUCT modbus_rtu_struct;
 //LPUART5 function======================================================================
 #define LPUART5_CLOCK_SOURCE 80000000UL
+
+uint32_t u32eastronSDM72DPM1 = 0;
+float val1=0; 
 void init_rs232_dc_cabinet(uint32_t baudrate, uint8_t parity){
   LPUART_Deinit(LPUART5);
   lpuart_config_t config;
@@ -1337,6 +1340,7 @@ void extract_holding_regs_data_lib(MODBUS_RTU_STRUCT *p_modbus,MODBUS_MANAGER_ST
   };
   switch(p_modbus_manager->lib_manager_struct[p_modbus_manager->lib_current_index].lib_type)
   {
+  case 13:// COSLIGHT_CF4850T 
   case 1:// COSLIGHT
     {
       switch(p_modbus_manager->lib_manager_struct[p_modbus_manager->lib_current_index].lib_running_step)
@@ -1524,6 +1528,7 @@ void extract_holding_regs_data_lib(MODBUS_RTU_STRUCT *p_modbus,MODBUS_MANAGER_ST
       };
     }
     break;
+  case 12:// SHOTO_SDA10_48100
   case 3:// SHOTO
     {
       switch(p_modbus_manager->lib_manager_struct[p_modbus_manager->lib_current_index].lib_running_step)
@@ -1900,6 +1905,7 @@ void extract_holding_regs_data_lib(MODBUS_RTU_STRUCT *p_modbus,MODBUS_MANAGER_ST
       
     }
     break;
+  case 14:// HUAFU_HF48100C
   case 6:// ZTT_New
     {
       switch(p_modbus_manager->lib_manager_struct[p_modbus_manager->lib_current_index].lib_running_step)
@@ -3260,6 +3266,298 @@ void extract_holding_regs_data_pm(MODBUS_RTU_STRUCT *p_modbus,MODBUS_MANAGER_STR
       }
     }
     break;
+    
+  case 17: //Schneider 2022
+    {
+      switch(p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_running_step)
+      {
+      case PM_SCHNEDER_3PHASE_INFO_1:
+        {
+          modbus_parse_info_string(ptr,&p_modbus_manager->pm_info_struct[i].u8Model[0], 20, 0,1);
+          p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_running_step = PM_SCHNEDER_3PHASE_INFO_2;
+        }
+        break;
+      case PM_SCHNEDER_3PHASE_INFO_2:
+        {
+          int32_t i32schneiderPM2 = 0;
+          float val2 = 0;
+          modbus_parse_info_sign(ptr,0,&p_modbus_manager->pm_info_struct[i].id_SerialNumber,0,0,16);
+          modbus_parse_info_sign(ptr,0, 0,&i32schneiderPM2,1,32);
+          p_modbus_manager->pm_info_struct[i].u32SerialNumber = (uint32_t)i32schneiderPM2;
+          p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_running_step = PM_SCHNEDER_3PHASE_INFO_3;
+        }
+        break;
+      case PM_SCHNEDER_3PHASE_INFO_3:
+        {
+          uint32_t u32schneiderPM3=0;
+          float val3=0;          
+          modbus_parse_info(ptr,0,0,&u32schneiderPM3,4,32);
+          memcpy(&val3,&u32schneiderPM3,4);
+          p_modbus_manager->pm_info_struct[i].u32TotalActiveE = (int32_t)(val3*100);
+          
+          modbus_parse_info(ptr,0,0,&u32schneiderPM3,12,32);
+          memcpy(&val3,&u32schneiderPM3,4);
+          p_modbus_manager->pm_info_struct[i].u32TotalReActiveE = (int32_t)(val3*100);
+          
+          p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_running_step = PM_SCHNEDER_3PHASE_INFO_4;
+         }
+         break;
+      case PM_SCHNEDER_3PHASE_INFO_4:
+        {
+          uint32_t u32schneiderPM4=0;
+          float val4=0;
+          modbus_parse_info(ptr,0,0,&u32schneiderPM4,0,32);
+          memcpy(&val4,&u32schneiderPM4,4);
+          p_modbus_manager->pm_info_struct[i].sPhaseInfo[0].fCurrent = (float)(val4*100);
+          
+          modbus_parse_info(ptr,0,0,&u32schneiderPM4,2,32);
+          memcpy(&val4,&u32schneiderPM4,4);
+          p_modbus_manager->pm_info_struct[i].sPhaseInfo[1].fCurrent = (float)(val4*100);
+          
+          modbus_parse_info(ptr,0,0,&u32schneiderPM4,4,32);
+          memcpy(&val4,&u32schneiderPM4,4);
+          p_modbus_manager->pm_info_struct[i].sPhaseInfo[2].fCurrent = (float)(val4*100);
+          
+          p_modbus_manager->pm_info_struct[i].fTotalCurrent = p_modbus_manager->pm_info_struct[i].sPhaseInfo[0].fCurrent 
+                                                             +p_modbus_manager->pm_info_struct[i].sPhaseInfo[1].fCurrent
+                                                             +p_modbus_manager->pm_info_struct[i].sPhaseInfo[2].fCurrent;
+                                                               
+          p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_running_step = PM_SCHNEDER_3PHASE_INFO_5;
+        }
+        break;
+        
+      case PM_SCHNEDER_3PHASE_INFO_5:
+        {
+          uint32_t u32schneiderPM5=0;
+          float val5=0;
+          modbus_parse_info(ptr,0,0,&u32schneiderPM5,0,32);
+          memcpy(&val5,&u32schneiderPM5,4);
+          p_modbus_manager->pm_info_struct[i].sPhaseInfo[0].fVoltage = (float)(val5*100);
+          
+          modbus_parse_info(ptr,0,0,&u32schneiderPM5,2,32);
+          memcpy(&val5,&u32schneiderPM5,4);
+          p_modbus_manager->pm_info_struct[i].sPhaseInfo[1].fVoltage = (float)(val5*100);
+          
+          modbus_parse_info(ptr,0,0,&u32schneiderPM5,4,32);
+          memcpy(&val5,&u32schneiderPM5,4);
+          p_modbus_manager->pm_info_struct[i].sPhaseInfo[2].fVoltage = (float)(val5*100);
+                                                               
+          p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_running_step = PM_SCHNEDER_3PHASE_INFO_6;
+        }
+        break;
+        
+        case PM_SCHNEDER_3PHASE_INFO_6:
+        {
+          uint32_t u32schneiderPM6=0;
+          float val6=0;
+          modbus_parse_info(ptr,0,0,&u32schneiderPM6,0,32);
+          memcpy(&val6,&u32schneiderPM6,4);
+          p_modbus_manager->pm_info_struct[i].sPhaseInfo[0].fActivePower = (float)(val6*100);
+          
+          modbus_parse_info(ptr,0,0,&u32schneiderPM6,2,32);
+          memcpy(&val6,&u32schneiderPM6,4);
+          p_modbus_manager->pm_info_struct[i].sPhaseInfo[1].fActivePower = (float)(val6*100);
+          
+          modbus_parse_info(ptr,0,0,&u32schneiderPM6,4,32);
+          memcpy(&val6,&u32schneiderPM6,4);
+          p_modbus_manager->pm_info_struct[i].sPhaseInfo[2].fActivePower = (float)(val6*100);
+          
+          modbus_parse_info(ptr,0,0,&u32schneiderPM6,6,32);
+          memcpy(&val6,&u32schneiderPM6,4);
+          p_modbus_manager->pm_info_struct[i].fRealPower = (float)(val6*100);
+          
+          //ReACTIVE POWER
+          modbus_parse_info(ptr,0,0,&u32schneiderPM6,8,32);
+          memcpy(&val6,&u32schneiderPM6,4);
+          p_modbus_manager->pm_info_struct[i].sPhaseInfo[0].fReactivePower = (float)(val6*100);
+          
+          modbus_parse_info(ptr,0,0,&u32schneiderPM6,10,32);
+          memcpy(&val6,&u32schneiderPM6,4);
+          p_modbus_manager->pm_info_struct[i].sPhaseInfo[1].fReactivePower = (float)(val6*100);
+          
+          modbus_parse_info(ptr,0,0,&u32schneiderPM6,12,32);
+          memcpy(&val6,&u32schneiderPM6,4);
+          p_modbus_manager->pm_info_struct[i].sPhaseInfo[2].fReactivePower = (float)(val6*100);
+          
+          modbus_parse_info(ptr,0,0,&u32schneiderPM6,14,32);
+          memcpy(&val6,&u32schneiderPM6,4);
+          p_modbus_manager->pm_info_struct[i].fReactiveEnergy = (float)(val6*100);
+          
+          //apparentpower
+          modbus_parse_info(ptr,0,0,&u32schneiderPM6,16,32);
+          memcpy(&val6,&u32schneiderPM6,4);
+          p_modbus_manager->pm_info_struct[i].sPhaseInfo[0].fApparentPower = (float)(val6*100);
+          
+          modbus_parse_info(ptr,0,0,&u32schneiderPM6,18,32);
+          memcpy(&val6,&u32schneiderPM6,4);
+          p_modbus_manager->pm_info_struct[i].sPhaseInfo[1].fApparentPower = (float)(val6*100);
+          
+          modbus_parse_info(ptr,0,0,&u32schneiderPM6,20,32);
+          memcpy(&val6,&u32schneiderPM6,4);
+          p_modbus_manager->pm_info_struct[i].sPhaseInfo[2].fApparentPower = (float)(val6*100);
+          
+          modbus_parse_info(ptr,0,0,&u32schneiderPM6,22,32);
+          memcpy(&val6,&u32schneiderPM6,4);
+          p_modbus_manager->pm_info_struct[i].fApparentPower = (float)(val6*100);
+          
+          p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_running_step = PM_SCHNEDER_3PHASE_INFO_7;
+        }
+        break;
+        
+      case PM_SCHNEDER_3PHASE_INFO_7: //POWER FACTOR
+        {
+          uint32_t u32schneiderPM7=0;
+          float val7=0;
+          
+          modbus_parse_info(ptr,0,0,&u32schneiderPM7,0,32);
+          memcpy(&val7,&u32schneiderPM7,4);
+          if(val7 >1)val7=2-val7;
+          else if(val7<-1)val7=-2-val7;
+          if(val7<0)val7=-val7;
+          p_modbus_manager->pm_info_struct[i].sPhaseInfo[0].fPowerFactor = ((float)val7)*100; 
+          
+          modbus_parse_info(ptr,0,0,&u32schneiderPM7,2,32);
+          memcpy(&val7,&u32schneiderPM7,4);
+          if(val7 >1)val7=2-val7;
+          else if(val7<-1)val7=-2-val7;
+          if(val7<0)val7=-val7;
+          p_modbus_manager->pm_info_struct[i].sPhaseInfo[1].fPowerFactor = ((float)val7)*100; 
+          
+          modbus_parse_info(ptr,0,0,&u32schneiderPM7,4,32);
+          memcpy(&val7,&u32schneiderPM7,4);
+          if(val7 >1)val7=2-val7;
+          else if(val7<-1)val7=-2-val7;
+          if(val7<0)val7=-val7;
+          p_modbus_manager->pm_info_struct[i].sPhaseInfo[2].fPowerFactor = ((float)val7)*100; 
+          
+          modbus_parse_info(ptr,0,0,&u32schneiderPM7,6,32);
+          memcpy(&val7,&u32schneiderPM7,4);
+          if(val7 >1)val7=2-val7;
+          else if(val7<-1)val7=-2-val7;
+          if(val7<0)val7=-val7;
+          p_modbus_manager->pm_info_struct[i].fPowerFactor = ((float)val7)*100;
+          
+          p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_running_step = PM_SCHNEDER_3PHASE_INFO_8;
+        }
+        break;
+      case PM_SCHNEDER_3PHASE_INFO_8:
+        {       
+          uint32_t u32schneiderPM8=0;
+          float val8=0; 
+          modbus_parse_info(ptr,0,0,&u32schneiderPM8,0,32);
+          memcpy(&val8,&u32schneiderPM8,4);
+          p_modbus_manager->pm_info_struct[i].fFrequency = (float)(val8*10);
+          p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_running_step = PM_SCHNEDER_3PHASE_INFO_1;
+        }
+        break;
+        default:
+          break;
+      }
+    }
+    break;
+  case 18: //EASTRON SMD72D 2022
+    {
+      uint32_t u32eastronSDM72DPM1 = 0;
+      float val1=0; 
+      switch(p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_running_step)
+      {
+      case PM_EASTRON_SDM72D_INFO_1:
+        {
+          for(uint8_t m= 0;m<3;m++)
+          {
+            modbus_parse_info(ptr,0,0,&u32eastronSDM72DPM1,m*2,32);
+            memcpy(&val1,&u32eastronSDM72DPM1,4);
+            p_modbus_manager->pm_info_struct[i].sPhaseInfo[m].fVoltage = (float)(val1*100);
+            
+            modbus_parse_info(ptr,0,0,&u32eastronSDM72DPM1,m*2+ 6,32);
+            memcpy(&val1,&u32eastronSDM72DPM1,4);
+            p_modbus_manager->pm_info_struct[i].sPhaseInfo[m].fCurrent = (float)(val1*100);
+            
+            modbus_parse_info(ptr,0,0,&u32eastronSDM72DPM1,m*2+ 12,32);
+            memcpy(&val1,&u32eastronSDM72DPM1,4);
+            p_modbus_manager->pm_info_struct[i].sPhaseInfo[m].fActivePower = (float)(val1/10);
+            
+            modbus_parse_info(ptr,0,0,&u32eastronSDM72DPM1,m*2+ 18,32);
+            memcpy(&val1,&u32eastronSDM72DPM1,4);
+            p_modbus_manager->pm_info_struct[i].sPhaseInfo[m].fApparentPower = (float)(val1/10);
+            
+            modbus_parse_info(ptr,0,0,&u32eastronSDM72DPM1,m*2+ 24,32);
+            memcpy(&val1,&u32eastronSDM72DPM1,4);
+            p_modbus_manager->pm_info_struct[i].sPhaseInfo[m].fReactivePower = -(float)(val1/10);
+          }  
+            p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_running_step = PM_EASTRON_SDM72D_INFO_2;
+        }
+        break;
+      case PM_EASTRON_SDM72D_INFO_2:
+        {
+          modbus_parse_info(ptr,0,0,&u32eastronSDM72DPM1,18,32);
+          memcpy(&val1,&u32eastronSDM72DPM1,4);
+          p_modbus_manager->pm_info_struct[i].fTotalCurrent = (float)(val1*100);
+          
+          modbus_parse_info(ptr,0,0,&u32eastronSDM72DPM1,22,32);
+          memcpy(&val1,&u32eastronSDM72DPM1,4);
+          p_modbus_manager->pm_info_struct[i].fTotalCurrent = (float)(val1/10);
+          
+          p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_running_step = PM_EASTRON_SDM72D_INFO_3;
+        }
+        break;
+      case PM_EASTRON_SDM72D_INFO_3:
+        {
+          modbus_parse_info(ptr,0,0,&u32eastronSDM72DPM1,0,32);
+          memcpy(&val1,&u32eastronSDM72DPM1,4);
+          p_modbus_manager->pm_info_struct[i].fReactivePower = -(val1/10);
+          
+          modbus_parse_info(ptr,0,0,&u32eastronSDM72DPM1,2,32);
+          memcpy(&val1,&u32eastronSDM72DPM1,4);
+          p_modbus_manager->pm_info_struct[i].fReactivePower = val1*10;
+          
+          modbus_parse_info(ptr,0,0,&u32eastronSDM72DPM1,10,32);
+          memcpy(&val1,&u32eastronSDM72DPM1,4);
+          p_modbus_manager->pm_info_struct[i].fFrequency = val1*10;
+          
+          modbus_parse_info(ptr,0,0,&u32eastronSDM72DPM1,12,32);
+          memcpy(&val1,&u32eastronSDM72DPM1,4);
+          p_modbus_manager->pm_info_struct[i].u32ImportActiveE = (uint32_t) (val1*100);
+          
+          modbus_parse_info(ptr,0,0,&u32eastronSDM72DPM1,14,32);
+          memcpy(&val1,&u32eastronSDM72DPM1,4);
+          p_modbus_manager->pm_info_struct[i].u32ExportActiveE =(uint32_t) (val1*100);
+          
+          p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_running_step = PM_EASTRON_SDM72D_INFO_4;
+        }
+        break;
+      case PM_EASTRON_SDM72D_INFO_4:
+        {
+          modbus_parse_info(ptr,0,0,&u32eastronSDM72DPM1,0,32);
+          memcpy(&val1,&u32eastronSDM72DPM1,4);
+          p_modbus_manager->pm_info_struct[i].u32TotalActiveE =(uint32_t) (val1*100);
+          
+          modbus_parse_info(ptr,0,0,&u32eastronSDM72DPM1,2,32);
+          memcpy(&val1,&u32eastronSDM72DPM1,4);
+          p_modbus_manager->pm_info_struct[i].u32TotalReActiveE =(uint32_t) (val1*100);
+          p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_running_step = PM_EASTRON_SDM72D_INFO_5;
+          
+        }
+        break;
+      case PM_EASTRON_SDM72D_INFO_5:
+        {
+          p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_running_step = PM_EASTRON_SDM72D_INFO_6;
+          
+        }
+        break;
+      case PM_EASTRON_SDM72D_INFO_6:
+        {
+          modbus_parse_info(ptr,0,0,&u32eastronSDM72DPM1,0,32);
+          p_modbus_manager->pm_info_struct[i].u32SerialNumber = u32eastronSDM72DPM1;
+          
+          p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_running_step = PM_EASTRON_SDM72D_INFO_1;
+        }
+        break;
+        default:
+          break;
+      }
+    }
+    break;
   default:
     break;
   };
@@ -3316,16 +3614,30 @@ void extract_holding_regs_data_smcb(MODBUS_RTU_STRUCT *p_modbus,MODBUS_MANAGER_S
           p_modbus_manager->smcb_manager_struct[p_modbus_manager->smcb_current_index].smcb_running_step = SMCB_MATIS_INFO_1;
         }
         break;
+     default:
+     break;
+      };
+    }
+   case 3:// GOL
+    {
+      switch(p_modbus_manager->smcb_manager_struct[p_modbus_manager->smcb_current_index].smcb_running_step)
+      {
+      case SMCB_GOL_INFO_1:
+        {
+          modbus_parse_info(ptr,0,(uint16_t*) &p_modbus_manager->smcb_info_struct[i].u32State,0,0,16);
+          
+          p_modbus_manager->smcb_manager_struct[p_modbus_manager->smcb_current_index].smcb_running_step = SMCB_GOL_INFO_1;
+        }
+        break;
       default:
         break;
       };
     }
     break;
-  default:
-    break;
+    default:
+      break;
   };
 }
-
 //extract holding regs data fuel--------------------------------
 void extract_holding_regs_data_fuel(MODBUS_RTU_STRUCT *p_modbus,MODBUS_MANAGER_STRUCT *p_modbus_manager){
   uint8_t i;

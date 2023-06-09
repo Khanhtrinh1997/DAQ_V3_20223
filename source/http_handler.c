@@ -352,6 +352,7 @@ error_t httpServeruriCallback(HttpConnection *connection, const char_t *uri) {
           modbus_manager_struct.lib_manager_struct[j-1].lib_type = temp;
           switch(modbus_manager_struct.lib_manager_struct[j-1].lib_type)
           {
+          case 13:// COSLIGHT_CF4850T
           case 1:// COSLIGHT
             {
               modbus_manager_struct.lib_manager_struct[j-1].lib_slave_offset = 0;
@@ -376,6 +377,7 @@ error_t httpServeruriCallback(HttpConnection *connection, const char_t *uri) {
               modbus_manager_struct.lib_manager_struct[j-1].lib_num_of_reg[2] = 2;
             }
             break;
+          case 12:// SHOTO_SDA10_48100
           case 3:// SHOTO_2019
             {
               modbus_manager_struct.lib_manager_struct[j-1].lib_slave_offset = 0;
@@ -422,6 +424,7 @@ error_t httpServeruriCallback(HttpConnection *connection, const char_t *uri) {
               modbus_manager_struct.lib_manager_struct[j-1].lib_num_of_reg[3] = 3;//2                 
             }
             break;
+          case 14:// HUAFU_HF48100C
           case 6:// ZTT_2020
             {
               modbus_manager_struct.lib_manager_struct[j-1].lib_slave_offset = 0;
@@ -517,6 +520,7 @@ error_t httpServeruriCallback(HttpConnection *connection, const char_t *uri) {
           modbus_manager_struct.lib_manager_struct[j-1].lib_type = temp;
           switch(modbus_manager_struct.lib_manager_struct[j-1].lib_type)
           {
+          case 13:// COSLIGHT_CF4850T
           case 1:// COSLIGHT
             {
               modbus_manager_struct.lib_manager_struct[j-1].lib_slave_offset = 0;
@@ -541,6 +545,7 @@ error_t httpServeruriCallback(HttpConnection *connection, const char_t *uri) {
               modbus_manager_struct.lib_manager_struct[j-1].lib_num_of_reg[2] = 2;
             }
             break;
+          case 12:// SHOTO_SDA10_48100
           case 3:// SHOTO_2019
             {
               modbus_manager_struct.lib_manager_struct[j-1].lib_slave_offset = 0;
@@ -592,7 +597,8 @@ error_t httpServeruriCallback(HttpConnection *connection, const char_t *uri) {
             //                  modbus_manager_struct.lib_manager_struct[j-1].lib_num_of_reg[0] = 54;                  
             //              }
             //              break;
-          case 6:// ZTT_2020
+          case 14: // HUAFU_HF48100C
+          case 6: // ZTT_2020
             {
               modbus_manager_struct.lib_manager_struct[j-1].lib_slave_offset = 0;
               modbus_manager_struct.lib_manager_struct[j-1].lib_abs_slave_id = j;
@@ -753,7 +759,7 @@ error_t httpServeruriCallback(HttpConnection *connection, const char_t *uri) {
           modbus_manager_struct.gen_manager_struct[j-1].gen_type = temp;
           switch(modbus_manager_struct.gen_manager_struct[j-1].gen_type)
           {
-          case 1:// KUBOTA
+          case 1: // KUBOTA
             {
               modbus_manager_struct.gen_manager_struct[j-1].gen_slave_offset = 60;
               modbus_manager_struct.gen_manager_struct[j-1].gen_abs_slave_id = 60+j;
@@ -1051,6 +1057,60 @@ error_t httpServeruriCallback(HttpConnection *connection, const char_t *uri) {
               modbus_manager_struct.pm_manager_struct[j-1].pm_num_of_reg[7]   = 8;
             }
             break;
+          case 17: //Schneider 2022
+            {
+              modbus_manager_struct.pm_manager_struct[j-1].pm_slave_offset  = 16;
+              modbus_manager_struct.pm_manager_struct[j-1].pm_abs_slave_id  = 16+j;
+              modbus_manager_struct.pm_manager_struct[j-1].pm_base_addr[0]  = 29;
+              modbus_manager_struct.pm_manager_struct[j-1].pm_num_of_reg[0] = 20;
+              
+              modbus_manager_struct.pm_manager_struct[j-1].pm_base_addr[1]  = 128;
+              modbus_manager_struct.pm_manager_struct[j-1].pm_num_of_reg[1] = 3;
+              
+              modbus_manager_struct.pm_manager_struct[j-1].pm_base_addr[2]  = 2699;
+              modbus_manager_struct.pm_manager_struct[j-1].pm_num_of_reg[2] = 24;
+              
+              modbus_manager_struct.pm_manager_struct[j-1].pm_base_addr[3]  = 2999;
+              modbus_manager_struct.pm_manager_struct[j-1].pm_num_of_reg[3] = 6;
+              
+              modbus_manager_struct.pm_manager_struct[j-1].pm_base_addr[4]  = 3027;
+              modbus_manager_struct.pm_manager_struct[j-1].pm_num_of_reg[4]   = 6;
+              
+              modbus_manager_struct.pm_manager_struct[j-1].pm_base_addr[5]  = 3053;
+              modbus_manager_struct.pm_manager_struct[j-1].pm_num_of_reg[5]   = 24;
+              
+              modbus_manager_struct.pm_manager_struct[j-1].pm_base_addr[6]  = 3077;
+              modbus_manager_struct.pm_manager_struct[j-1].pm_num_of_reg[6]   = 8;
+              
+              modbus_manager_struct.pm_manager_struct[j-1].pm_base_addr[7]  = 3109;
+              modbus_manager_struct.pm_manager_struct[j-1].pm_num_of_reg[7]   = 2;
+            }
+            
+            break;
+          case 18://EASTRON SMD72D 2022
+            {
+              modbus_manager_struct.pm_manager_struct[j-1].pm_slave_offset  = 16;
+              modbus_manager_struct.pm_manager_struct[j-1].pm_abs_slave_id  = 16+j;
+              
+              modbus_manager_struct.pm_manager_struct[j-1].pm_base_addr[0]  = 0;
+              modbus_manager_struct.pm_manager_struct[j-1].pm_num_of_reg[0] = 30;
+              
+              modbus_manager_struct.pm_manager_struct[j-1].pm_base_addr[1]  = 30;
+              modbus_manager_struct.pm_manager_struct[j-1].pm_num_of_reg[1] = 30;
+              
+              modbus_manager_struct.pm_manager_struct[j-1].pm_base_addr[2]  = 60;
+              modbus_manager_struct.pm_manager_struct[j-1].pm_num_of_reg[2] = 30;
+              
+              modbus_manager_struct.pm_manager_struct[j-1].pm_base_addr[3]  = 342;
+              modbus_manager_struct.pm_manager_struct[j-1].pm_num_of_reg[3] = 30;
+              
+              modbus_manager_struct.pm_manager_struct[j-1].pm_base_addr[4]  = 10;
+              modbus_manager_struct.pm_manager_struct[j-1].pm_num_of_reg[4]   = 30;
+              
+              modbus_manager_struct.pm_manager_struct[j-1].pm_base_addr[5]  = 64512;
+              modbus_manager_struct.pm_manager_struct[j-1].pm_num_of_reg[5]   = 4;
+            }
+            break;
           };            
           // Did parameters change?--------------------------------------------
           if  (parameter.modbus_parameter[j-1+ MAX_NUM_OF_LIB + MAX_NUM_OF_GEN + MAX_NUM_OF_BM].device_vendor != modbus_manager_struct.pm_manager_struct[j-1].pm_type)
@@ -1142,7 +1202,14 @@ error_t httpServeruriCallback(HttpConnection *connection, const char_t *uri) {
               modbus_manager_struct.smcb_manager_struct[j-1].smcb_num_of_reg[0] = 1;    
             }
             break;
-          };
+          case 3:// GOL
+            {
+              modbus_manager_struct.smcb_manager_struct[j-1].smcb_slave_offset = 18;
+              modbus_manager_struct.smcb_manager_struct[j-1].smcb_abs_slave_id = 18+j;
+              modbus_manager_struct.smcb_manager_struct[j-1].smcb_base_addr[0] = 32768;
+              modbus_manager_struct.smcb_manager_struct[j-1].smcb_num_of_reg[0] = 1;   
+            }
+            break;
           
           // Did parameters change?---------------------------------------------
           if  (parameter.modbus_parameter[j-1+MAX_NUM_OF_LIB+MAX_NUM_OF_GEN+MAX_NUM_OF_BM+MAX_NUM_OF_PM+MAX_NUM_OF_VAC].device_vendor != modbus_manager_struct.smcb_manager_struct[j-1].smcb_type)
@@ -1163,6 +1230,7 @@ error_t httpServeruriCallback(HttpConnection *connection, const char_t *uri) {
       break;
     };
     
+  }
   }
   else if(strncmp(uri, "/smcbTotal?value=", 9) == 0)
   {

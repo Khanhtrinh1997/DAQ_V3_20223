@@ -113,8 +113,8 @@ void update_device(){
       }else{
         if(config_handler_struct.cnt_timeout_update++>=20){
           
-          config_handler_struct.cnt_timeout_update =0;
-          config_handler_struct.state_update = _NO_FW_UPDATE;
+           config_handler_struct.cnt_timeout_update =0;
+           config_handler_struct.state_update = _NO_FW_UPDATE;
         }
       }
       vTaskDelay(1000);
@@ -1260,6 +1260,9 @@ void master_modbus(MODBUS_RTU_STRUCT *p_modbus,MODBUS_MANAGER_STRUCT *p_modbus_m
       else if (p_modbus_manager->smcb_manager_struct[private_mib_base_struct.smcbGroup.flag].smcb_type == 2) // MATIS
         mater_write_06_u16(p_modbus,p_modbus_manager,(uint8_t)private_mib_base_struct.smcbGroup.SmcbTable[private_mib_base_struct.smcbGroup.flag].SmcbModbusID, 17,(uint16_t) private_mib_base_struct.smcbGroup.SmcbTable[private_mib_base_struct.smcbGroup.flag].SmcbStateWrite+1,
                            _SMBC_SLAVE,4500);
+      else if (p_modbus_manager->smcb_manager_struct[private_mib_base_struct.smcbGroup.flag].smcb_type == 3) // GOL
+        mater_write_06_u16(p_modbus,p_modbus_manager,(uint8_t)private_mib_base_struct.smcbGroup.SmcbTable[private_mib_base_struct.smcbGroup.flag].SmcbModbusID, 32768,(uint16_t) private_mib_base_struct.smcbGroup.SmcbTable[private_mib_base_struct.smcbGroup.flag].SmcbStateWrite+1,
+                           _SMBC_SLAVE,4500);
       p_modbus->running_step = _WAIT_WRITE_MULTI_REG;
       
     }
@@ -1437,7 +1440,7 @@ void master_modbus(MODBUS_RTU_STRUCT *p_modbus,MODBUS_MANAGER_STRUCT *p_modbus_m
   }
   //marter read------------------------------------------------------------------------
   switch(p_modbus->running_step){
-  case _TEST_MODE:    
+    case _TEST_MODE:    
     {
       sTestRS485.Cnt++;
       if(sTestRS485.RS485CabRecv!=0)
@@ -1806,6 +1809,7 @@ RTU_STATE read_lib_status(MODBUS_RTU_STRUCT *p_modbus,MODBUS_MANAGER_STRUCT *p_m
       p_modbus_manager->lib_current_index =0;  
     }
     switch(p_modbus_manager->lib_manager_struct[p_modbus_manager->lib_current_index].lib_type){
+    case 13:// COSLIGHT_CF4850T---------------------------------------------------------------  
     case 1:// COSLIGHT------------------------------------------------------------------------
       {
         init_rs485_modbus_rtu(BAUD_RATE_19200,NONE_PARITY);
@@ -1864,6 +1868,7 @@ RTU_STATE read_lib_status(MODBUS_RTU_STRUCT *p_modbus,MODBUS_MANAGER_STRUCT *p_m
         }
       }
       break;
+    case 12:// SHOTO_SDA10_48100--------------------------------------------------------------  
     case 3:// SHOTO_2019----------------------------------------------------------------------
       {
         init_rs485_modbus_rtu(BAUD_RATE_9600,NONE_PARITY);
@@ -1900,7 +1905,7 @@ RTU_STATE read_lib_status(MODBUS_RTU_STRUCT *p_modbus,MODBUS_MANAGER_STRUCT *p_m
         
       }
       break;
-    case 4:// HUAWEI -------------------------------------------------------------------------------------------
+    case 4:// HUAWEI -------------------------------------------------------------------------
       {
         init_rs485_modbus_rtu(BAUD_RATE_9600,NONE_PARITY);
         if(p_modbus_manager->lib_current_index <8){
@@ -1940,7 +1945,7 @@ RTU_STATE read_lib_status(MODBUS_RTU_STRUCT *p_modbus,MODBUS_MANAGER_STRUCT *p_m
         }       
       }
       break;
-    case 5:// M1Viettel150-------------------------------------------------------------------------------------
+    case 5:// M1Viettel150--------------------------------------------------------------------
       {
         init_rs485_modbus_rtu(BAUD_RATE_9600,NONE_PARITY);
         p_modbus_manager->lib_manager_struct[p_modbus_manager->lib_current_index].lib_abs_slave_id = p_modbus_manager->lib_current_index +1;
@@ -1984,8 +1989,9 @@ RTU_STATE read_lib_status(MODBUS_RTU_STRUCT *p_modbus,MODBUS_MANAGER_STRUCT *p_m
             break;
         }         
       }
-      break;      
-    case 6:// ZTT_2020------------------------------------------------------------------------------
+      break;
+    case 14:// HUAFU_HF48100C----------------------------------------------------------------- 
+    case 6:// ZTT_2020------------------------------------------------------------------------
       {
         init_rs485_modbus_rtu(BAUD_RATE_9600,NONE_PARITY);
         p_modbus_manager->lib_manager_struct[p_modbus_manager->lib_current_index].lib_abs_slave_id = p_modbus_manager->lib_current_index +1;
@@ -2176,7 +2182,8 @@ RTU_STATE wait_lib_respond(MODBUS_RTU_STRUCT *p_modbus,MODBUS_MANAGER_STRUCT *p_
         p_modbus_manager->cnt_dis_connect_lib[p_modbus_manager->lib_current_index]++;
         switch(p_modbus_manager->lib_manager_struct[p_modbus_manager->lib_current_index].lib_type)
         {
-        case 1:
+        case 13:   
+        case 1: // coslight
           {
             p_modbus_manager->lib_manager_struct[p_modbus_manager->lib_current_index].lib_running_step = LIB_COSLIGHT_INFO_1;
           }
@@ -2186,6 +2193,7 @@ RTU_STATE wait_lib_respond(MODBUS_RTU_STRUCT *p_modbus,MODBUS_MANAGER_STRUCT *p_
             p_modbus_manager->lib_manager_struct[p_modbus_manager->lib_current_index].lib_running_step = LIB_COSLIGHT_OLD_INFO_1;
           }
           break;
+        case 12:
         case 3:
           {
             p_modbus_manager->lib_manager_struct[p_modbus_manager->lib_current_index].lib_running_step = LIB_SHOTO_INFO_1;
@@ -2201,6 +2209,7 @@ RTU_STATE wait_lib_respond(MODBUS_RTU_STRUCT *p_modbus,MODBUS_MANAGER_STRUCT *p_
             p_modbus_manager->lib_manager_struct[p_modbus_manager->lib_current_index].lib_running_step = LIB_VIETTEL_INFO_1;
           }
           break;
+        case 14:
         case 6:
           {
             p_modbus_manager->lib_manager_struct[p_modbus_manager->lib_current_index].lib_running_step = LIB_ZTT_2020_INFO_1;
@@ -2923,6 +2932,151 @@ RTU_STATE read_pm_status(MODBUS_RTU_STRUCT *p_modbus,MODBUS_MANAGER_STRUCT *p_mo
         }  
       }
       break;
+      
+    case 17: //Schneider 2022
+      {
+        init_rs485_modbus_rtu(BAUD_RATE_9600,NONE_PARITY);
+        switch(p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_running_step)
+        {
+        case PM_SCHNEDER_3PHASE_INFO_1:
+          {
+            master_read_modbus(p_modbus,0x03,p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_abs_slave_id, 
+                               p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_base_addr[0],
+                               p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_num_of_reg[0],
+                               4500);
+          }                   
+          break;
+        case PM_SCHNEDER_3PHASE_INFO_2:
+          {
+            master_read_modbus(p_modbus,0x03,p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_abs_slave_id, 
+                               p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_base_addr[1],
+                               p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_num_of_reg[1],
+                               4500);
+          }
+          break;
+        case PM_SCHNEDER_3PHASE_INFO_3:
+          {
+            master_read_modbus(p_modbus,0x03,p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_abs_slave_id, 
+                               p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_base_addr[2],
+                               p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_num_of_reg[2],
+                               4500);
+          }
+          break;
+          case PM_SCHNEDER_3PHASE_INFO_4:
+          {
+            master_read_modbus(p_modbus,0x03,p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_abs_slave_id, 
+                               p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_base_addr[3],
+                               p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_num_of_reg[3],
+                               4500);
+          }                   
+          break;
+          case PM_SCHNEDER_3PHASE_INFO_5:
+          {
+            master_read_modbus(p_modbus,0x03,p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_abs_slave_id, 
+                               p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_base_addr[4],
+                               p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_num_of_reg[4],
+                               4500);
+          }                   
+          break;
+          case PM_SCHNEDER_3PHASE_INFO_6:
+          {
+            master_read_modbus(p_modbus,0x03,p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_abs_slave_id, 
+                               p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_base_addr[5],
+                               p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_num_of_reg[5],
+                               4500);
+          }                   
+          break;
+          case PM_SCHNEDER_3PHASE_INFO_7:
+          {
+            master_read_modbus(p_modbus,0x03,p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_abs_slave_id, 
+                               p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_base_addr[6],
+                               p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_num_of_reg[6],
+                               4500);
+          }                   
+          break;
+          case PM_SCHNEDER_3PHASE_INFO_8:
+          {
+            master_read_modbus(p_modbus,0x03,p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_abs_slave_id, 
+                               p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_base_addr[7],
+                               p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_num_of_reg[7],
+                               4500);
+          }                   
+          break;
+          case PM_SCHNEDER_3PHASE_INFO_9:
+          {
+            master_read_modbus(p_modbus,0x03,p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_abs_slave_id, 
+                               p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_base_addr[8],
+                               p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_num_of_reg[8],
+                               4500);
+          }                   
+          break;
+        
+        default:
+          break;
+        }
+        
+      }
+      break;
+      
+    case 18: ////EASTRON SMD72D 2022
+      {
+        init_rs485_modbus_rtu(BAUD_RATE_9600,NONE_PARITY);
+        switch(p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_running_step)      
+        {
+        case PM_EASTRON_SDM72D_INFO_1:
+          {
+            master_read_modbus(p_modbus,0x04,p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_abs_slave_id,
+                               p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_base_addr[0],
+                               p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_num_of_reg[0],
+                               4500);
+          }
+          break;
+        case PM_EASTRON_SDM72D_INFO_2:
+          {
+            master_read_modbus(p_modbus,0x04,p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_abs_slave_id,
+                               p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_base_addr[1],
+                               p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_num_of_reg[1],
+                               4500);
+          }
+          break;
+        case PM_EASTRON_SDM72D_INFO_3:
+          {
+            master_read_modbus(p_modbus,0x04,p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_abs_slave_id,
+                               p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_base_addr[2],
+                               p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_num_of_reg[2],
+                               4500);
+          }
+          break;
+          case PM_EASTRON_SDM72D_INFO_4:
+          {
+            master_read_modbus(p_modbus,0x04,p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_abs_slave_id,
+                               p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_base_addr[3],
+                               p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_num_of_reg[3],
+                               4500);
+          }
+          break;
+          case PM_EASTRON_SDM72D_INFO_5:
+          {
+            master_read_modbus(p_modbus,0x03,p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_abs_slave_id,
+                               p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_base_addr[4],
+                               p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_num_of_reg[4],
+                               4500);
+          }
+          break;
+          case PM_EASTRON_SDM72D_INFO_6:
+          {
+            master_read_modbus(p_modbus,0x03,p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_abs_slave_id,
+                               p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_base_addr[5],
+                               p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_num_of_reg[5],
+                               4500);
+          }
+          break;
+        default:
+          break;
+        };
+      }
+      break;
+   
     default:
       break;
     }
@@ -2990,6 +3144,17 @@ RTU_STATE wait_pm_respond(MODBUS_RTU_STRUCT *p_modbus,MODBUS_MANAGER_STRUCT *p_m
             p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_running_step = PM_YADA_3PHASE_DPC_INFO_1;
           }
           break;
+        case 17: //Schneider 2022
+          {
+            p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_running_step = PM_SCHNEDER_3PHASE_INFO_1;
+          }
+          break; 
+          
+        case 18: //EASTRON SMD72D 2022
+          {
+            p_modbus_manager->pm_manager_struct[p_modbus_manager->pm_current_index].pm_running_step = PM_EASTRON_SDM72D_INFO_1;
+          }
+          break;
         };  
         p_modbus_manager->pm_current_index++;
       }
@@ -3008,6 +3173,8 @@ RTU_STATE wait_pm_respond(MODBUS_RTU_STRUCT *p_modbus,MODBUS_MANAGER_STRUCT *p_m
         //                        case PM_FORLONG_INFO_1:
       case PM_YADA_3PHASE_DPC_INFO_1:
       case PM_PILOT_3PHASE_INFO_1:
+      case PM_SCHNEDER_3PHASE_INFO_1:
+      case PM_EASTRON_SDM72D_INFO_1:
         {
           p_modbus_manager->pm_current_index++;
         }break;  
@@ -3177,6 +3344,26 @@ RTU_STATE read_smbc_status(MODBUS_RTU_STRUCT *p_modbus,MODBUS_MANAGER_STRUCT *p_
         };
       }
       break;
+      
+    case 3:// GOL
+      {
+        vTaskDelay(1000);
+        init_rs485_modbus_rtu(BAUD_RATE_9600,NONE_PARITY);
+        switch(p_modbus_manager->smcb_manager_struct[p_modbus_manager->smcb_current_index].smcb_running_step)
+        {
+        case SMCB_GOL_INFO_1:
+          {
+            master_read_modbus(p_modbus,0x03,p_modbus_manager->smcb_manager_struct[p_modbus_manager->smcb_current_index].smcb_abs_slave_id,
+                                    p_modbus_manager->smcb_manager_struct[p_modbus_manager->smcb_current_index].smcb_base_addr[0],
+                                    p_modbus_manager->smcb_manager_struct[p_modbus_manager->smcb_current_index].smcb_num_of_reg[0],
+                                    4500);//35,0x00,20
+          }
+          break;
+        default:
+          break;
+        };
+      }
+      break;
     default:
       break;
     }
@@ -3204,14 +3391,19 @@ RTU_STATE wait_smcb_respond(MODBUS_RTU_STRUCT *p_modbus,MODBUS_MANAGER_STRUCT *p
         p_modbus_manager->cnt_dis_connect_smbc[p_modbus_manager->smcb_current_index]++;
         switch(p_modbus_manager->smcb_manager_struct[p_modbus_manager->smcb_current_index].smcb_type)
         {
-        case 1:
+        case 1: //open
           {
             p_modbus_manager->smcb_manager_struct[p_modbus_manager->smcb_current_index].smcb_running_step = SMCB_OPEN_INFO_1;
           }
           break;
-        case 2:
+        case 2: //matis
           {
             p_modbus_manager->smcb_manager_struct[p_modbus_manager->smcb_current_index].smcb_running_step = SMCB_MATIS_INFO_1;
+          }
+          break;
+        case 3: //gol
+          {
+            p_modbus_manager->smcb_manager_struct[p_modbus_manager->smcb_current_index].smcb_running_step = SMCB_GOL_INFO_1;
           }
           break;
         };                        
@@ -3226,6 +3418,7 @@ RTU_STATE wait_smcb_respond(MODBUS_RTU_STRUCT *p_modbus,MODBUS_MANAGER_STRUCT *p
       {
       case SMCB_OPEN_INFO_1:
       case SMCB_MATIS_INFO_1:
+      case SMCB_GOL_INFO_1:
         {
           p_modbus_manager->smcb_current_index++;
         }break;                      
@@ -4201,6 +4394,7 @@ void update_lib_info(PRIVATE_MIB_BASE_STRUCT *p_mib,MODBUS_MANAGER_STRUCT *p_mod
 
             switch(p_modbus_manager->lib_manager_struct[i].lib_type)
             {
+            case 13:// COSLIGHT_CF4850T
             case 1:// COSLIGHT 
               {
                 p_mib->liBattGroup.liBattTable[i].liBattIndex = i+1; 
@@ -4241,7 +4435,7 @@ void update_lib_info(PRIVATE_MIB_BASE_STRUCT *p_mib,MODBUS_MANAGER_STRUCT *p_mod
                 p_mib->liBattGroup.liBattTable[i].liBattModbusID = p_modbus_manager->lib_manager_struct[i].lib_abs_slave_id;
               }
               break;
-              case 2:// COSLIGHT_OLD_V1.1 
+            case 2:// COSLIGHT_OLD_V1.1 
               {
                 p_mib->liBattGroup.liBattTable[i].liBattIndex = i+1; 
                 p_mib->liBattGroup.liBattTable[i].liBattAmbTemp = p_modbus_manager->lib_info_struct[i].u16AverTempCell * 10;
@@ -4270,6 +4464,7 @@ void update_lib_info(PRIVATE_MIB_BASE_STRUCT *p_mib,MODBUS_MANAGER_STRUCT *p_mod
                 p_mib->liBattGroup.liBattTable[i].liBattModbusID = p_modbus_manager->lib_manager_struct[i].lib_abs_slave_id;
               }
               break;
+            case 12:// SHOTO_SDA10_48100
             case 3:// SHOTO_2019
               {
                 p_mib->liBattGroup.liBattTable[i].liBattIndex = i+1;
@@ -4986,6 +5181,7 @@ void update_lib_info(PRIVATE_MIB_BASE_STRUCT *p_mib,MODBUS_MANAGER_STRUCT *p_mod
                 p_mib->liBattGroup.liBattTable[i].liBattModbusID = p_modbus_manager->lib_manager_struct[i].lib_abs_slave_id;
             }
             break;
+            case 14:// HUAFU_HF48100C
             case 6:// ZTT_2020
             {
                 p_mib->liBattGroup.liBattTable[i].liBattIndex = i+1;
@@ -7049,6 +7245,144 @@ void update_pm_info(PRIVATE_MIB_BASE_STRUCT *p_mib,MODBUS_MANAGER_STRUCT *p_modb
           
         }
         break;
+      case 17: //Schneider 2022
+        {
+          p_mib->pmGroup.pmTable[i].pmID                        = i+1;
+          p_mib->pmGroup.pmTable[i].pmTotalActiveEnergy         =(uint32_t) (p_modbus_manager->pm_info_struct[i].u32TotalActiveE);
+          p_mib->pmGroup.pmTable[i].pmTotalReactiveEnergy       =(uint32_t) (p_modbus_manager->pm_info_struct[i].u32TotalReActiveE);
+          p_mib->pmGroup.pmTable[i].pmPowerFactor               =(uint32_t) (p_modbus_manager->pm_info_struct[i].fPowerFactor);
+          p_mib->pmGroup.pmTable[i].pmFrequency                 =(uint32_t) (p_modbus_manager->pm_info_struct[i].fFrequency); 
+          p_mib->pmGroup.pmTable[i].pmActivePower               =(uint32_t) (p_modbus_manager->pm_info_struct[i].fRealPower);
+          p_mib->pmGroup.pmTable[i].pmReactivePower             =(uint32_t) (p_modbus_manager->pm_info_struct[i].fReactivePower);
+          p_mib->pmGroup.pmTable[i].pmTotalCurrent              =(uint32_t) (p_modbus_manager->pm_info_struct[i].fTotalCurrent);
+          
+          p_mib->pmGroup.pmTable[i].pmPhase1Current             =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[0].fCurrent);
+          p_mib->pmGroup.pmTable[i].pmPhase1Voltage             =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[0].fVoltage);
+          p_mib->pmGroup.pmTable[i].pmPhase1RealPower           =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[0].fActivePower);
+          p_mib->pmGroup.pmTable[i].pmPhase1ApparentPower       =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[0].fApparentPower);
+          p_mib->pmGroup.pmTable[i].pmPhase1ReactivePower             =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[0].fReactivePower);
+          p_mib->pmGroup.pmTable[i].pmPhase1PowerFactor         =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[0].fPowerFactor);
+          
+          p_mib->pmGroup.pmTable[i].pmPhase2Current             =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[1].fCurrent);
+          p_mib->pmGroup.pmTable[i].pmPhase2Voltage             =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[1].fVoltage);
+          p_mib->pmGroup.pmTable[i].pmPhase2RealPower           =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[1].fActivePower);
+          p_mib->pmGroup.pmTable[i].pmPhase2ApparentPower       =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[1].fApparentPower);
+          p_mib->pmGroup.pmTable[i].pmPhase2ReactivePower       =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[1].fReactivePower);
+          p_mib->pmGroup.pmTable[i].pmPhase2PowerFactor         =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[1].fReactivePower);
+          
+          p_mib->pmGroup.pmTable[i].pmPhase3Current             =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[2].fCurrent);
+          p_mib->pmGroup.pmTable[i].pmPhase3Voltage             =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[2].fVoltage);
+          p_mib->pmGroup.pmTable[i].pmPhase3RealPower           =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[2].fActivePower);
+          p_mib->pmGroup.pmTable[i].pmPhase3ApparentPower       =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[2].fApparentPower);
+          p_mib->pmGroup.pmTable[i].pmPhase3ReactivePower       =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[2].fReactivePower);
+          p_mib->pmGroup.pmTable[i].pmPhase3PowerFactor         =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[2].fReactivePower);
+          
+          p_mib->pmGroup.pmTable[i].pmType                      =p_modbus_manager->pm_manager_struct[i].pm_type;
+          p_mib->pmGroup.pmTable[i].pmModbusID                  =p_modbus_manager->pm_manager_struct[i].pm_abs_slave_id;
+          
+          sprintf(&p_mib->pmGroup.pmTable[i].pmSerial[0],"%d%s%d",p_modbus_manager->pm_info_struct[i].id_SerialNumber,"0",p_modbus_manager->pm_info_struct[i].u32SerialNumber);
+          p_mib->pmGroup.pmTable[i].pmSerialLen = 12;
+          sprintf(&p_mib->pmGroup.pmTable[i].pmModel[0],"%s","PM2230");
+          p_mib->pmGroup.pmTable[i].pmModelLen = 6;
+          
+          if((p_mib->pmGroup.pmTable[i].pmFrequency != 0) && (p_mib->pmGroup.pmTable[i].pmEnableFreqTrap == 1))
+          {
+            if ((p_mib->pmGroup.pmTable[i].pmFrequency >= (500 + p_mib->pmGroup.pmTable[i].pmDeltaFreqDisConnect)) || 
+                (p_mib->pmGroup.pmTable[i].pmFrequency <= (500 - p_mib->pmGroup.pmTable[i].pmDeltaFreqDisConnect))){
+                  cntInFrq = 0;
+                  if(cntOutFrq++ > 10){
+                    cntOutFrq = 11;
+                    p_mib->pmGroup.pmTable[i].pmOutOfRangeFreq = 1;
+                  }
+                }
+            else if ((p_mib->pmGroup.pmTable[i].pmFrequency <= (500 + p_mib->pmGroup.pmTable[i].pmDeltaFreqReConnect)) && 
+                     (p_mib->pmGroup.pmTable[i].pmFrequency >= (500 - p_mib->pmGroup.pmTable[i].pmDeltaFreqReConnect))){
+                       cntOutFrq = 0;
+                       if(cntInFrq++ > 10){
+                         cntInFrq = 11;
+                         p_mib->pmGroup.pmTable[i].pmOutOfRangeFreq = 0;
+                       }
+                     }
+          }
+          else {
+            cntOutFrq = 0;
+            cntInFrq  = 0;
+            p_mib->pmGroup.pmTable[i].pmOutOfRangeFreq = 0;
+          }
+          
+          p_mib->main_alarm_group_struct.alarm_out_of_range_freq_pack[i] = p_mib->pmGroup.pmTable[i].pmOutOfRangeFreq;
+        }
+        break;
+      case 18: //EASTRON SMD72D 2022
+        {
+          p_mib->pmGroup.pmTable[i].pmImportActiveEnergy        =(uint32_t) (p_modbus_manager->pm_info_struct[i].u32ImportActiveE);
+          p_mib->pmGroup.pmTable[i].pmExportActiveEnergy        =(uint32_t) (p_modbus_manager->pm_info_struct[i].u32ExportActiveE);
+          p_mib->pmGroup.pmTable[i].pmID                        = i+1;
+          p_mib->pmGroup.pmTable[i].pmTotalActiveEnergy         =(uint32_t) (p_modbus_manager->pm_info_struct[i].u32TotalActiveE);
+          p_mib->pmGroup.pmTable[i].pmTotalReactiveEnergy       =(uint32_t) (p_modbus_manager->pm_info_struct[i].u32TotalReActiveE);
+          p_mib->pmGroup.pmTable[i].pmPowerFactor               =(uint32_t) (p_modbus_manager->pm_info_struct[i].fPowerFactor);
+          p_mib->pmGroup.pmTable[i].pmFrequency                 =(uint32_t) (p_modbus_manager->pm_info_struct[i].fFrequency); 
+          p_mib->pmGroup.pmTable[i].pmActivePower               =(uint32_t) (p_modbus_manager->pm_info_struct[i].fRealPower);
+          p_mib->pmGroup.pmTable[i].pmReactivePower             =(uint32_t) (p_modbus_manager->pm_info_struct[i].fReactivePower);
+          p_mib->pmGroup.pmTable[i].pmTotalCurrent              =(uint32_t) (p_modbus_manager->pm_info_struct[i].fTotalCurrent);
+          
+          p_mib->pmGroup.pmTable[i].pmPhase1Current             =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[0].fCurrent);
+          p_mib->pmGroup.pmTable[i].pmPhase1Voltage             =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[0].fVoltage);
+          p_mib->pmGroup.pmTable[i].pmPhase1RealPower           =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[0].fActivePower);
+          p_mib->pmGroup.pmTable[i].pmPhase1ApparentPower       =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[0].fApparentPower);
+          p_mib->pmGroup.pmTable[i].pmPhase1ReactivePower       =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[0].fReactivePower);
+          p_mib->pmGroup.pmTable[i].pmPhase1PowerFactor         =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[0].fPowerFactor);
+          
+          p_mib->pmGroup.pmTable[i].pmPhase2Current             =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[1].fCurrent);
+          p_mib->pmGroup.pmTable[i].pmPhase2Voltage             =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[1].fVoltage);
+          p_mib->pmGroup.pmTable[i].pmPhase2RealPower           =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[1].fActivePower);
+          p_mib->pmGroup.pmTable[i].pmPhase2ApparentPower       =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[1].fApparentPower);
+          p_mib->pmGroup.pmTable[i].pmPhase2ReactivePower       =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[1].fReactivePower);
+          p_mib->pmGroup.pmTable[i].pmPhase2PowerFactor         =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[1].fReactivePower);
+          
+          p_mib->pmGroup.pmTable[i].pmPhase3Current             =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[2].fCurrent);
+          p_mib->pmGroup.pmTable[i].pmPhase3Voltage             =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[2].fVoltage);
+          p_mib->pmGroup.pmTable[i].pmPhase3RealPower           =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[2].fActivePower);
+          p_mib->pmGroup.pmTable[i].pmPhase3ApparentPower       =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[2].fApparentPower);
+          p_mib->pmGroup.pmTable[i].pmPhase3ReactivePower       =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[2].fReactivePower);
+          p_mib->pmGroup.pmTable[i].pmPhase3PowerFactor         =(int32_t) (p_modbus_manager->pm_info_struct[i].sPhaseInfo[2].fReactivePower);
+          
+          p_mib->pmGroup.pmTable[i].pmType                      =p_modbus_manager->pm_manager_struct[i].pm_type;
+          p_mib->pmGroup.pmTable[i].pmModbusID                  =p_modbus_manager->pm_manager_struct[i].pm_abs_slave_id;
+          
+          sprintf(&p_mib->pmGroup.pmTable[i].pmSerial[0],"%d",p_modbus_manager->pm_info_struct[i].u32SerialNumber);
+          p_mib->pmGroup.pmTable[i].pmSerialLen = 8;
+          sprintf(&p_mib->pmGroup.pmTable[i].pmModel[0],"%s","SDM72D");
+          p_mib->pmGroup.pmTable[i].pmModelLen = 6;
+          
+          if((p_mib->pmGroup.pmTable[i].pmFrequency != 0) && (p_mib->pmGroup.pmTable[i].pmEnableFreqTrap == 1))
+          {
+            if ((p_mib->pmGroup.pmTable[i].pmFrequency >= (500 + p_mib->pmGroup.pmTable[i].pmDeltaFreqDisConnect)) || 
+                (p_mib->pmGroup.pmTable[i].pmFrequency <= (500 - p_mib->pmGroup.pmTable[i].pmDeltaFreqDisConnect))){
+                  cntInFrq = 0;
+                  if(cntOutFrq++ > 10){
+                    cntOutFrq = 11;
+                    p_mib->pmGroup.pmTable[i].pmOutOfRangeFreq = 1;
+                  }
+                }
+            else if ((p_mib->pmGroup.pmTable[i].pmFrequency <= (500 + p_mib->pmGroup.pmTable[i].pmDeltaFreqReConnect)) && 
+                     (p_mib->pmGroup.pmTable[i].pmFrequency >= (500 - p_mib->pmGroup.pmTable[i].pmDeltaFreqReConnect))){
+                       cntOutFrq = 0;
+                       if(cntInFrq++ > 10){
+                         cntInFrq = 11;
+                         p_mib->pmGroup.pmTable[i].pmOutOfRangeFreq = 0;
+                       }
+                     }
+          }
+          else {
+            cntOutFrq = 0;
+            cntInFrq  = 0;
+            p_mib->pmGroup.pmTable[i].pmOutOfRangeFreq = 0;
+          }
+          
+          p_mib->main_alarm_group_struct.alarm_out_of_range_freq_pack[i] = p_mib->pmGroup.pmTable[i].pmOutOfRangeFreq;
+        }
+        break;
       default:
         break;
       };
@@ -7213,6 +7547,20 @@ void update_smbc_info(PRIVATE_MIB_BASE_STRUCT *p_mib,MODBUS_MANAGER_STRUCT *p_mo
           p_mib->main_alarm_group_struct.alarm_smcb_pack[i] = p_mib->smcbGroup.SmcbTable[i].SmcbState;
         }
         break;
+        
+      case 3: //GOL
+        p_mib->smcbGroup.SmcbTable[i].SmcbStatusID = i+1;
+        p_mib->smcbGroup.SmcbTable[i].SmcbType = p_modbus_manager->smcb_manager_struct[i].smcb_type;
+        if(p_modbus_manager->setting_cmd != SET_SMCB_STATE){
+            if(p_modbus_manager->smcb_info_struct[i].u32State == 1)
+              p_mib->smcbGroup.SmcbTable[i].SmcbState = 0;
+            else if(p_modbus_manager->smcb_info_struct[i].u32State == 2)
+              p_mib->smcbGroup.SmcbTable[i].SmcbState = 1;
+            else
+              p_mib->smcbGroup.SmcbTable[i].SmcbState = 2;
+          }
+          p_mib->smcbGroup.SmcbTable[i].SmcbModbusID = p_modbus_manager->smcb_manager_struct[i].smcb_abs_slave_id;
+          p_mib->main_alarm_group_struct.alarm_smcb_pack[i] = p_mib->smcbGroup.SmcbTable[i].SmcbState;
       };
     }
     else

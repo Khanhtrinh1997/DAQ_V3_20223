@@ -2,7 +2,7 @@
 
 "C:\Program Files\IAR Systems\Embedded Workbench 9.0\arm\bin\armJLINK.dll" 
 
-"D:\THANH\21.DAQ_V3\09.DAQ_V3_app\debug\freertos_hello.out" 
+"H:\1NAMPT25\DAQ_V3\code_DAQ_V3\debug\freertos_hello.out" 
 
 --plugin="C:\Program Files\IAR Systems\Embedded Workbench 9.0\arm\bin\armbat.dll" 
 
@@ -10,7 +10,7 @@
 
 --device_macro="C:\Program Files\IAR Systems\Embedded Workbench 9.0\arm\config\debugger\NXP\iMXRT_Trace.dmac" 
 
---macro="D:\THANH\21.DAQ_V3\09.DAQ_V3_app\evkbimxrt1050\evkbimxrt1050_sdram_init.mac" 
+--macro="H:\1NAMPT25\DAQ_V3\code_DAQ_V3\evkbimxrt1050\evkbimxrt1050_sdram_init.mac" 
 
 --flash_loader="C:\Program Files\IAR Systems\Embedded Workbench 9.0\arm\config\flashloader\NXP\FlashIMXRT1050_EVK_FlexSPI.board" 
 

@@ -1884,7 +1884,11 @@ liionBattStatusType  OBJECT-TYPE
 		HUAWEI_A1 (8),
 		SAFT (9),
 		NARADA75 (10),
-		EVE(11)
+		EVE(11),
+		SHOTO_SDA10_48100(12),
+		COSLIGHT_CF4850T(13),
+		HUAFU_HF48100C(14)
+
 	}
 	MAX-ACCESS read-write
 	STATUS     current
@@ -3264,6 +3268,9 @@ pmType  OBJECT-TYPE
 		PILOT (5),
 		FORLONG (6),
 		PILOT_3PHASE (15),
+		YADA_3PHASE_DPC (16),
+		Schneider 2022 (17),
+		EASTRON SMD72D 2022 (18)
 	}
 	MAX-ACCESS read-write
 	STATUS     current
@@ -4967,6 +4974,7 @@ smcbType  OBJECT-TYPE
 		INVALID (0),
 		OPEN (1),
 		MATIS (2),
+		GOL (3)
 	}
 	MAX-ACCESS read-write
 	STATUS     current

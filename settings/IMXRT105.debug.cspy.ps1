@@ -23,9 +23,9 @@
 
 if ($debugfile -eq "")
 {
-& "C:\Program Files\IAR Systems\Embedded Workbench 9.0\common\bin\cspybat" -f "D:\THANH\21.DAQ_V3\09.DAQ_V3_app\settings\IMXRT105.debug.general.xcl" --backend -f "D:\THANH\21.DAQ_V3\09.DAQ_V3_app\settings\IMXRT105.debug.driver.xcl" 
+& "C:\Program Files\IAR Systems\Embedded Workbench 9.0\common\bin\cspybat" -f "H:\1NAMPT25\DAQ_V3\code_DAQ_V3\settings\IMXRT105.debug.general.xcl" --backend -f "H:\1NAMPT25\DAQ_V3\code_DAQ_V3\settings\IMXRT105.debug.driver.xcl" 
 }
 else
 {
-& "C:\Program Files\IAR Systems\Embedded Workbench 9.0\common\bin\cspybat" -f "D:\THANH\21.DAQ_V3\09.DAQ_V3_app\settings\IMXRT105.debug.general.xcl" --debug_file=$debugfile --backend -f "D:\THANH\21.DAQ_V3\09.DAQ_V3_app\settings\IMXRT105.debug.driver.xcl" 
+& "C:\Program Files\IAR Systems\Embedded Workbench 9.0\common\bin\cspybat" -f "H:\1NAMPT25\DAQ_V3\code_DAQ_V3\settings\IMXRT105.debug.general.xcl" --debug_file=$debugfile --backend -f "H:\1NAMPT25\DAQ_V3\code_DAQ_V3\settings\IMXRT105.debug.driver.xcl" 
 }

@@ -94,7 +94,16 @@ function LIIONBATTStatusGet()
 						} else if(LIIONBATTListInfo[i].vendor == 11)
 						{
 							setRowText(LiionSetParam[1][i], 'EVE');
-						} 						
+						} else if(LIIONBATTListInfo[i].vendor == 12)
+						{
+							setRowText(LiionSetParam[1][i], 'SHOTO_SDA10_48100');
+						}else if(LIIONBATTListInfo[i].vendor == 13)
+						{
+							setRowText(LiionSetParam[1][i], 'COSLIGHT_CF4850T');
+						}else if(LIIONBATTListInfo[i].vendor == 14)
+						{
+							setRowText(LiionSetParam[1][i], 'HUAFU_HF48100C');
+						}						
 						//setRowText(LiionSetParam[2][i], LIIONBATTListInfo[i].serialNo);						
 					}	
 				}						

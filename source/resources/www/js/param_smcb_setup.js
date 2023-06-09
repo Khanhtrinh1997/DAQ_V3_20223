@@ -64,6 +64,10 @@ function SMCBStatusGet()
 						{
 							setRowText(SMCBSetParam[1][i], 'MATIS');
 						} 	
+						else if(SMCBListInfo[i].vendor == 3)// ten mcb
+						{
+							setRowText(SMCBSetParam[1][i], 'GOL');
+						} 	
 //						if(SMCBListInfo[i].connect == 0)// tinh trang ket noi mcb
 //						{
 //							setRowText(SMCBSetParam[2][i], 'inActive');
